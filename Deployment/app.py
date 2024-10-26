@@ -1,35 +1,38 @@
-
 import streamlit as st
-import pandas as pd
-import numpy as np
 import tensorflow as tf
 from PIL import Image
-from io import BytesIO
-from tensorflow.keras.utils import load_img, img_to_array
-#from keras.preprocessing.image import img_to_array
-from keras.applications.inception_v3 import preprocess_input
-from keras.models import load_model
+import numpy as np
 
-model = load_model('best_model.h5')
+# Load your model
+model = tf.keras.models.load_model('Best_model.h5')  # Adjust the path to your model
 
-classes = {0:'Benign',1:'Malignant',2:'Normal'}
+# Define class labels (adjust these to match your model's output classes)
+class_labels = ['Benign', 'Malignant', 'Normal']  # Update with your actual class names
 
-img_file = st.file_uploader('select an image', type=['jpg','png','jpeg','gif','jfif','heic'])
+def preprocess_image(image):
+    # Preprocess your image here (e.g., resizing, normalization)
+    image = image.resize((224, 224))  # Adjust to your model's input size
+    image_array = np.array(image) / 255.0  # Normalize
+    return np.expand_dims(image_array, axis=0)  # Add batch dimension
 
-if img_file is not None :
-    img = Image.open(img_file)
-    st.image(img,caption='Upload image succesfully')
-    
-    if st.button('predict'):
-        img = img.resize((256,256))
-        i = img_to_array(img)
-        i = preprocess_input(i)
-        input_arr = np.array([i])
-        
-        y_out = np.argmax(model.predict(input_arr))
-        y_out1 = classes[y_out]
-        
-        #if y_out1 = 0:
-        st.write(f'This image is a {y_out1}')
-        #else:
-            #st.write(f'This image is a {y_out1}')
+st.title("Image Classification App")
+
+uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
+
+if uploaded_file is not None:
+    image = Image.open(uploaded_file)
+    st.image(image, caption='Uploaded Image', use_column_width=True)
+    st.write("")
+    st.write("Classifying...")
+
+    # Preprocess the image
+    preprocessed_image = preprocess_image(image)
+
+    # Make prediction
+    predictions = model.predict(preprocessed_image)
+    predicted_class_index = np.argmax(predictions, axis=1)  # Get the index of the highest probability
+    predicted_class = class_labels[predicted_class_index[0]]  # Map index to class label
+
+    # Display the prediction
+    st.write("Predicted Class:", predicted_class)
+    st.write("Prediction Probabilities:", predictions)
