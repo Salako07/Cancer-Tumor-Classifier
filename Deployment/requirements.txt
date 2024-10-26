@@ -1,3 +1,5 @@
-Flask
-tensorflow
-numpy
+Flask==2.1.2
+tensorflow==2.8.0  # Or replace with torch==1.10.0 if using PyTorch
+Pillow==9.0.1
+numpy==1.22.0
+gunicorn==20.1.0  # Optional, if you’re using Gunicorn for production
