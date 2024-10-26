@@ -1,39 +1,35 @@
-from flask import Flask, request, jsonify
+
+import streamlit as st
+import pandas as pd
+import numpy as np
 import tensorflow as tf
 from PIL import Image
-import numpy as np
-import io
-from urllib.parse import quote as url_quote  # Use this as a replacement in your code
+from io import BytesIO
+from tensorflow.keras.utils import load_img, img_to_array
+#from keras.preprocessing.image import img_to_array
+from keras.applications.inception_v3 import preprocess_input
+from keras.models import load_model
 
-# Load your model
-model = tf.keras.models.load_model("model.h5")
+model = load_model('best_model.h5')
 
-# Define your image preprocessing function
-def preprocess_image(image):
-    # Assuming image input as a PIL image and resizing/normalizing as needed
-    image = image.resize((224, 224))  # Resize to model's expected input size
-    image_array = np.array(image) / 255.0  # Normalize pixel values
-    return np.expand_dims(image_array, axis=0)  # Add batch dimension
+classes = {0:'Benign',1:'Malignant',2:'Normal'}
 
-# Initialize Flask app
-app = Flask(__name__)
+img_file = st.file_uploader('select an image', type=['jpg','png','jpeg','gif','jfif','heic'])
 
-@app.route("/predict", methods=["POST"])
-def predict():
-    if 'file' not in request.files:
-        return jsonify({"error": "No file uploaded"}), 400
-    file = request.files["file"]
-    try:
-        # Read the image file and preprocess it
-        image = Image.open(io.BytesIO(file.read()))
-        processed_image = preprocess_image(image)
-
-        # Make a prediction
-        prediction = model.predict(processed_image)
-        return jsonify({"prediction": prediction.tolist()})
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-if __name__ == "__main__":
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
+if img_file is not None :
+    img = Image.open(img_file)
+    st.image(img,caption='Upload image succesfully')
+    
+    if st.button('predict'):
+        img = img.resize((256,256))
+        i = img_to_array(img)
+        i = preprocess_input(i)
+        input_arr = np.array([i])
+        
+        y_out = np.argmax(model.predict(input_arr))
+        y_out1 = classes[y_out]
+        
+        #if y_out1 = 0:
+        st.write(f'This image is a {y_out1}')
+        #else:
+            #st.write(f'This image is a {y_out1}')
