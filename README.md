@@ -19,7 +19,7 @@
      - Class balancing through Image Augumentation.
 
 #### 4. **Setup Instructions**
-   - **Dependencies:** List key libraries (e.g., TensorFlow, Keras, OpenCV, Numpy, Pandas).
+   - **Dependencies:** key libraries (e.g., TensorFlow, Keras, Numpy, Pandas).
    - **Installation Steps:** :
      ```bash
      pip install -r requirements.txt
@@ -52,7 +52,7 @@
    - **Inference:** Ongoing Deployment on Azure.
 
 #### 8. **Future Work**
-   - **Model Improvement:**  Additional Data willbe used to train the model, different acrchitectures wille considered.
+   - **Model Improvement:**  Additional Data will be used to train the model, different acrchitectures wille considered.
    - **Extensions:** Possible applications or extensions, like multi-class tumor classification for additional tumor types.
 
 
